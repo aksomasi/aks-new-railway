@@ -1,0 +1,109 @@
+<div class="page-header">
+  <div class="page-title">
+    <h2>Orders Dashboard</h2>
+    <p class="page-subtitle">Real-time order management</p>
+  </div>
+</div>
+
+<div class="filters-box">
+  <div class="filters-container">
+    <div class="search-container">
+      <input type="text" 
+             [(ngModel)]="searchTerm" 
+             (input)="onSearchChange()"
+             class="search-input" 
+             placeholder="Search by Order ID or Customer">
+    </div>
+    <div class="status-filter">
+      <select [(ngModel)]="statusFilter" 
+              (change)="onStatusFilterChange()"
+              class="filter-select">
+        <option value="all">All Status</option>
+        <option value="new">Pending</option>
+        <option value="preparing">Preparing</option>
+        <option value="ready">Ready</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="orders-board">
+  <div *ngFor="let status of getStatusConfig()" class="order-column">
+    <div class="column-header" [ngClass]="status.class">
+      <div class="column-title">
+        <h3>{{status.title}}</h3>
+        <p>{{status.subtitle}}</p>
+      </div>
+      <span class="column-badge" [ngClass]="status.class">
+        {{getOrdersByStatus(status.id).length}}
+      </span>
+    </div>
+    
+    <div class="orders-list">
+      <div *ngFor="let order of getOrdersByStatus(status.id)" class="order-card">
+        <div class="order-header">
+          <div>
+            <span class="order-id-badge">#{{order.id}}</span>
+            </div>
+          <div class="order-time-section">
+            <span class="order-time-label">Order Time</span>
+            <div class="order-time-value">{{formatTime(order.timestamp)}}</div>
+          </div>
+        </div>
+
+        <div class="customer-info-box">
+          <div class="customer-name-row">
+            {{order.full_name || 'N/A'}}
+          </div>
+          <div class="customer-detail-row">
+            🚗 {{order.plate || 'N/A'}}
+          </div>
+          <div class="customer-detail-row">
+            📝 {{order.car_details || 'N/A'}}
+          </div>
+        </div>
+
+        <div class="order-items">
+          <div *ngFor="let item of order.items" class="order-item-row">
+            <div class="order-item-header">
+              <span class="order-item-qty">{{item.qty}}x</span>
+              {{item.name}}
+              <!-- <span class="order-item-price">${{(item.qty * item.price).toFixed(2)}}</span> -->
+            </div>
+            <div *ngIf="item.customizations.length > 0" class="order-item-customs">
+              <div *ngFor="let customization of item.customizations" class="addon-item">
+                ✓ {{customization}}
+              </div>
+            </div>
+          </div>
+          <!-- <div class="order-total-row">
+            <span class="order-total-label">Total</span>
+            <span class="order-total-amount">${{order.total.toFixed(2)}}</span>
+          </div> -->
+        </div>
+
+        <button *ngIf="order.status === 'new'" 
+                class="action-btn accept" 
+                (click)="changeOrderStatus(order.id, 'preparing')">
+          ✓ Accept Order
+        </button>
+        
+        <button *ngIf="order.status === 'preparing'" 
+                class="action-btn mark-ready" 
+                (click)="changeOrderStatus(order.id, 'ready')">
+          ✓ Mark Ready for Pickup
+        </button>
+        
+        <button *ngIf="order.status === 'ready'" 
+                class="action-btn complete" 
+                (click)="changeOrderStatus(order.id, 'completed')">
+          ✓ Complete Order
+        </button>
+      </div>
+      
+      <div *ngIf="getOrdersByStatus(status.id).length === 0" class="empty-state">
+        No {{status.id}} orders
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="landing-page">
+  <div class="landing-content">
+    <div class="title-section">
+      <h1>Enter your details</h1>
+    </div>
+
+    <div class="form-section">
+      <h3>Required information</h3>
+      <div class="input-group">
+        <div class="error-container">
+          <div class="error-message" *ngIf="errors.fullName">{{errors.fullName}}</div>
+        </div>
+        <input type="text" class="form-input full-width" [class.error]="errors.fullName" placeholder="Full name *" [(ngModel)]="customer.fullName" (ngModelChange)="onFullNameChange()" maxlength="50">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>🚗 Vehicle information</h3>
+      <div class="input-group">
+        <input type="text" class="form-input full-width plate-input" placeholder="License plate (optional)" [(ngModel)]="customer.plate" maxlength="15">
+      </div>
+      <div class="input-group">
+        <input type="text" class="form-input full-width" placeholder="Car details (optional - e.g., Red Honda Civic)" [(ngModel)]="customer.carDetails" maxlength="100">
+      </div>
+    </div>
+
+    <button class="continue-btn" (click)="continueToMenu()">Continue to menu</button>
+    <p class="terms-text">Personal information provided will be kept confidential and never used for commercial purposes</p>
+  </div>
+</div>

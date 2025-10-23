@@ -1,0 +1,112 @@
+<div class="page-header">
+  <div class="page-title">
+    <h2>Category Management</h2>
+    <p class="page-subtitle">Organize your menu items • {{availableCount}} of {{filteredCategories.length}} categories active</p>
+    <p class="warning-text">
+      💡 Disabling a category will hide all items in that category from customers
+    </p>
+  </div>
+  <button *ngIf="isAdmin" class="btn-primary" (click)="openModal()">
+ Add New Category
+  </button>
+</div>
+
+<div class="filters-box">
+  <div class="filters-container">
+    <div class="search-container">
+      <input type="text"
+             [(ngModel)]="searchTerm"
+             (input)="onSearchChange()"
+             class="search-input"
+             placeholder="Search categories by name or description">
+    </div>
+    <div class="availability-filter">
+      <select [(ngModel)]="availabilityFilter"
+              (change)="onAvailabilityFilterChange()"
+              class="filter-select">
+        <option value="all">All Categories</option>
+        <option value="available">Active Only</option>
+        <option value="unavailable">Inactive Only</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="data-table">
+  <div class="table-header">
+    <div>CATEGORY NAME</div>
+    <div>DESCRIPTION</div>
+    <div>ITEMS</div>
+    <div>STATUS</div>
+    <div *ngIf="isAdmin" style="text-align: center;">EDIT</div>
+    <div *ngIf="isAdmin" style="text-align: center;">DELETE</div>
+  </div>
+  
+  <div *ngFor="let category of filteredCategories" class="table-row" [style.opacity]="category.available ? '1' : '0.5'">
+    <div>
+      <div class="category-name">{{category.name}}</div>
+    </div>
+    <div class="category-description">{{category.description || 'No description'}}</div>
+    <div class="item-count">
+      <span class="count-badge" [class.has-items]="category.itemCount > 0">
+        {{category.itemCount}} items
+      </span>
+    </div>
+    <div>
+      <label class="toggle-switch">
+        <input type="checkbox" [checked]="category.available" (change)="toggleAvailability(category.id)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-secondary" (click)="editCategory(category)">Edit</button>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-danger" 
+              [disabled]="category.itemCount > 0"
+              [title]="category.itemCount > 0 ? 'Cannot delete category with items' : ''"
+              (click)="deleteCategory(category.id)">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{editingCategory ? 'Edit Category' : 'Add New Category'}}</h2>
+    
+    <div class="form-group">
+      <label>Category Name *</label>
+      <input type="text" [(ngModel)]="categoryForm.name" class="form-input" 
+             [class.error]="showErrors && !categoryForm.name.trim()"
+             placeholder="e.g., Hot Dogs, Burgers">
+      <div *ngIf="showErrors && !categoryForm.name.trim()" class="error-message">
+        Category name is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Description (Optional)</label>
+      <textarea [(ngModel)]="categoryForm.description" rows="3" class="form-input" placeholder="Brief description of this category..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveCategory()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div *ngIf="showErrorModal" class="modal-overlay" (click)="closeErrorModal()">
+  <div class="modal-content error-modal" (click)="$event.stopPropagation()">
+    <div class="error-icon">⚠️</div>
+    <h2>Duplicate Name Error</h2>
+    <p>{{errorMessage}}</p>
+    <div class="modal-actions">
+      <button class="btn-primary" (click)="closeErrorModal()">OK</button>
+    </div>
+  </div>
+</div>

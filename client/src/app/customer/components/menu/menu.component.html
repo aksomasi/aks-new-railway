@@ -1,0 +1,41 @@
+<div class="main-app">
+
+
+  <div class="category-tabs">
+    <button *ngFor="let category of categories" 
+            class="category-tab" 
+            [class.active]="currentCategory === category"
+            (click)="setCategory(category)">
+      {{category}}
+    </button>
+  </div>
+
+  <div class="menu-container">
+    <h2>{{currentCategory}}</h2>
+    <div class="menu-grid">
+      <div *ngFor="let item of currentMenuItems" 
+           class="menu-card" 
+           [class.out-of-stock]="!item.available"
+           (click)="item.available ? addToCart(item) : null">
+        <img [src]="getFullImageUrl(item.image_url)" [alt]="item.name">
+        <div class="menu-card-content">
+          <h3>{{item.name}}</h3>
+          <p>{{item.description}}</p>
+          <p *ngIf="hasAvailableCustomizations(item)" class="customizable-text">✨ Customizable</p>
+          <p *ngIf="!item.available" class="out-of-stock-text">❌ Out of Stock</p>
+          <div class="menu-card-footer">
+            <span class="price">${{item.price.toFixed(2)}}</span>
+            <div class="add-icon" [class.disabled]="!item.available">{{item.available ? '+' : '✕'}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-bar" [class.hidden]="cartCount === 0">
+    <button class="view-cart-btn" (click)="showCart.emit()">
+      <span>View Cart ( {{cartCount}} {{cartCount === 1 ? 'item' : 'items'}} )</span>
+      <span>${{cartTotal.toFixed(2)}}</span>
+    </button>
+  </div>
+</div>

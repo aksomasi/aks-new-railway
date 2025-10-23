@@ -1,0 +1,45 @@
+<div class="main-app">
+
+  <div class="cart-view">
+    <div class="cart-header">
+      <button class="back-btn" (click)="showMenu.emit()">←</button>
+      <h2>Your Cart</h2>
+    </div>
+    <div>
+      <div *ngFor="let item of cartItems; let i = index" class="cart-item">
+        <div class="cart-item-content">
+          <div class="item-details">
+            <h3>{{item.name}}</h3>
+            <div *ngIf="item.customizations.length > 0" class="customizations">
+              <div *ngFor="let custom of item.customizations">+ {{custom.name}}</div>
+            </div>
+            <div class="item-price">${{((item.price + item.customPrice) * item.qty).toFixed(2)}}</div>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" (click)="updateQty(i, -1)">−</button>
+            <span class="qty-display">{{item.qty}}</span>
+            <button class="qty-btn plus" (click)="updateQty(i, 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkout-footer" [class.hidden]="cartItems.length === 0">
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span>${{subtotal.toFixed(2)}}</span>
+    </div>
+    <div class="summary-row">
+      <span>Tax (8%)</span>
+      <span>${{tax.toFixed(2)}}</span>
+    </div>
+    <div class="summary-row total-row">
+      <span>Total</span>
+      <span>${{total.toFixed(2)}}</span>
+    </div>
+    <button class="checkout-btn" (click)="checkout()" [disabled]="isProcessing">
+      {{isProcessing ? 'Processing...' : 'Place Order'}}
+    </button>
+  </div>
+</div>

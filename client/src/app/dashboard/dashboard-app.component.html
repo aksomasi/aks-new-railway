@@ -1,0 +1,49 @@
+<div class="dashboard-layout">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo">W</div>
+        <div class="logo-text">
+          <h1>Wienerschnitzel</h1>
+          <p>Restaurant Dashboard</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="user-info">
+          <span>Welcome, {{currentUser?.username}}</span>
+        </div>
+        <div class="notification-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span class="notification-badge" [style.display]="totalOrdersCount > 0 ? 'flex' : 'none'">{{totalOrdersCount}}</span>
+        </div>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <div class="tabs-content">
+      <button class="tab" [class.active]="currentTab === 'orders'" (click)="showTab('orders')">Orders</button>
+      <button class="tab" [class.active]="currentTab === 'history'" (click)="showTab('history')">History</button>
+      <button class="tab" [class.active]="currentTab === 'menu'" (click)="showTab('menu')">Menu</button>
+      <button class="tab" [class.active]="currentTab === 'addons'" (click)="showTab('addons')">Add-ons</button>
+      <button class="tab" [class.active]="currentTab === 'categories'" (click)="showTab('categories')">Categories</button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <app-orders *ngIf="currentTab === 'orders'"></app-orders>
+    <app-menu-dashboard *ngIf="currentTab === 'menu'"></app-menu-dashboard>
+    <app-categories *ngIf="currentTab === 'categories'"></app-categories>
+    <app-addons *ngIf="currentTab === 'addons'"></app-addons>
+    <app-history *ngIf="currentTab === 'history'"></app-history>
+    
+    <div *ngIf="currentTab === 'analytics'" class="empty-state">
+      <h2>📊 Analytics Dashboard</h2>
+      <p>Track your restaurant's performance with real-time analytics.</p>
+      <p style="margin-top: 1rem; font-style: italic;">Uses RxJS Observables for reactive data flow</p>
+    </div>
+  </main>
+</div>

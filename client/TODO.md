@@ -1,0 +1,5 @@
+- [x] Add filters section to menu.component.html with search input and category/availability dropdowns
+- [x] Update menu.component.ts to add searchTerm, categoryFilter, availabilityFilter properties and filteredMenuItems getter
+- [x] Update menu.component.html to use filteredMenuItems instead of menuItems
+- [x] Add CSS styles for filters box in menu.component.scss
+- [ ] Test the filters work correctly

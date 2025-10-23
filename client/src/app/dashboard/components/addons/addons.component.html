@@ -1,0 +1,108 @@
+<div class="page-header">
+  <div class="page-title">
+    <h2>Add-on Management</h2>
+    <p class="page-subtitle">Manage global add-ons • {{availableCount}} of {{filteredAddons.length}} available</p>
+    <p class="warning-text">
+      💡 Disabling an add-on here will disable it across all menu items
+    </p>
+  </div>
+  <button *ngIf="isAdmin" class="btn-primary" (click)="openModal()">
+   Add New Add-on
+  </button>
+</div>
+
+<div class="filters-box">
+  <div class="filters-container">
+    <div class="search-container">
+      <input type="text"
+             [(ngModel)]="searchTerm"
+             (input)="onSearchChange()"
+             class="search-input"
+             placeholder="Search add-ons by name">
+    </div>
+    <div class="availability-filter">
+      <select [(ngModel)]="availabilityFilter"
+              (change)="onAvailabilityFilterChange()"
+              class="filter-select">
+        <option value="all">All Add-ons</option>
+        <option value="available">Available Only</option>
+        <option value="unavailable">Unavailable Only</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="data-table">
+  <div class="table-header-addons">
+    <div>ADD-ON NAME</div>
+    <div>PRICE</div>
+    <div>AVAILABILITY</div>
+    <div *ngIf="isAdmin" style="text-align: center;">EDIT</div>
+    <div *ngIf="isAdmin" style="text-align: center;">DELETE</div>
+  </div>
+  
+  <div *ngFor="let addon of filteredAddons" class="table-row-addons" [style.opacity]="addon.available ? '1' : '0.5'">
+    <div>
+      <div class="addon-name">{{addon.name}}</div>
+    </div>
+    <div class="price-cell" [style.color]="addon.price === 0 ? '#666' : '#4CAF50'">
+      {{addon.price === 0 ? 'Free' : '+$' + addon.price.toFixed(2)}}
+    </div>
+    <div>
+      <label class="toggle-switch">
+        <input type="checkbox" [checked]="addon.available" (change)="toggleAvailability(addon.id)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-secondary" (click)="editAddon(addon)">Edit</button>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-danger" (click)="deleteAddon(addon.id)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{editingAddon ? 'Edit Add-on' : 'Add New Add-on'}}</h2>
+    
+    <div class="form-group">
+      <label>Add-on Name *</label>
+      <input type="text" [(ngModel)]="addonForm.name" class="form-input" 
+             [class.error]="showErrors && !addonForm.name.trim()"
+             placeholder="e.g., Extra Cheese, No Onions">
+      <div *ngIf="showErrors && !addonForm.name.trim()" class="error-message">
+        Add-on name is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Price *</label>
+      <input type="number" step="0.01" [(ngModel)]="addonForm.price" class="form-input" 
+             [class.error]="showErrors && (addonForm.price === null || addonForm.price === undefined || addonForm.price < 0)"
+             placeholder="0.00">
+      <div *ngIf="showErrors && (addonForm.price === null || addonForm.price === undefined || addonForm.price < 0)" class="error-message">
+        Price is required (use 0 for free options)
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveAddon()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div *ngIf="showErrorModal" class="modal-overlay" (click)="closeErrorModal()">
+  <div class="modal-content error-modal" (click)="$event.stopPropagation()">
+    <div class="error-icon">⚠️</div>
+    <h2>Duplicate Name Error</h2>
+    <p>{{errorMessage}}</p>
+    <div class="modal-actions">
+      <button class="btn-primary" (click)="closeErrorModal()">OK</button>
+    </div>
+  </div>
+</div>

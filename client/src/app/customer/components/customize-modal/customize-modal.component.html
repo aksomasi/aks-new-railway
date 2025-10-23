@@ -1,0 +1,31 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{item?.name}}</h2>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="item-description">{{item?.desc}}</p>
+      <h3 class="extras-title">Add extras</h3>
+      <div>
+        <label *ngFor="let option of availableOptions" 
+               class="customization-option" 
+               [class.selected]="isSelected(option.id)">
+          <div class="option-content">
+            <input type="checkbox" 
+                   [checked]="isSelected(option.id)"
+                   [disabled]="option.available === false"
+                   (change)="toggleOption(option)">
+            <span>{{option.name}}</span>
+          </div>
+          <span>+${{(+option.price).toFixed(2)}}</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="add-to-cart-btn" (click)="addToCart()">
+        Add to Cart - ${{totalPrice.toFixed(2)}}
+      </button>
+    </div>
+  </div>
+</div>

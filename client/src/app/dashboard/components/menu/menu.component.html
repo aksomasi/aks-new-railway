@@ -1,0 +1,172 @@
+<div class="page-header">
+  <div class="page-title">
+    <h2>Menu Management</h2>
+    <p class="page-subtitle">{{availableCount}} of {{filteredMenuItems.length}} items available</p>
+  </div>
+  <button *ngIf="isAdmin" class="btn-primary" (click)="openModal()">
+     Add Menu Item
+  </button>
+</div>
+
+<div class="filters-box">
+  <div class="filters-container">
+    <div class="search-container">
+      <input type="text"
+             [(ngModel)]="searchTerm"
+             (input)="onSearchChange()"
+             class="search-input"
+             placeholder="Search by name, description, or category">
+    </div>
+    <div class="category-filter">
+      <select [(ngModel)]="categoryFilter"
+              (change)="onCategoryFilterChange()"
+              class="filter-select">
+        <option value="all">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category.name">
+          {{category.name}}
+        </option>
+      </select>
+    </div>
+    <div class="availability-filter">
+      <select [(ngModel)]="availabilityFilter"
+              (change)="onAvailabilityFilterChange()"
+              class="filter-select">
+        <option value="all">All Items</option>
+        <option value="available">Available Only</option>
+        <option value="unavailable">Unavailable Only</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="data-table">
+  <div class="table-header">
+    <div>ITEM NAME</div>
+    <div>PRICE</div>
+    <div>CATEGORY</div>
+    <div>AVAILABILITY</div>
+    <div *ngIf="isAdmin" style="text-align: center;">EDIT</div>
+    <div *ngIf="isAdmin" style="text-align: center;">DELETE</div>
+  </div>
+  
+  <div *ngFor="let item of filteredMenuItems" class="table-row" [style.opacity]="item.available ? '1' : '0.5'">
+    <div>
+      <div class="item-name">{{item.name}}</div>
+      <div class="item-description">{{item.description}}</div>
+      <div *ngIf="item.customizationIds.length > 0" class="item-addons">
+        ⚙️ {{item.customizationIds.length}} add-on(s)
+      </div>
+    </div>
+    <div class="price-cell">${{item.price.toFixed(2)}}</div>
+    <div>
+      <span class="category-badge">{{item.category}}</span>
+    </div>
+    <div>
+      <label class="toggle-switch">
+        <input type="checkbox" [checked]="item.available" (change)="toggleAvailability(item.id)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-secondary" (click)="editMenuItem(item)">Edit</button>
+    </div>
+    <div *ngIf="isAdmin" style="text-align: center;">
+      <button class="btn-danger" (click)="deleteMenuItem(item.id)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{editingMenuItem ? 'Edit Menu Item' : 'Add Menu Item'}}</h2>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Item Name *</label>
+        <input type="text" [(ngModel)]="menuForm.name" class="form-input" 
+               [class.error]="showErrors && !menuForm.name.trim()"
+               placeholder="e.g., Chili Cheese Dog">
+        <div *ngIf="showErrors && !menuForm.name.trim()" class="error-message">
+          Item name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Price *</label>
+        <input type="number" step="0.01" [(ngModel)]="menuForm.price" class="form-input" 
+               [class.error]="showErrors && (!menuForm.price || menuForm.price <= 0)"
+               placeholder="0.00">
+        <div *ngIf="showErrors && (!menuForm.price || menuForm.price <= 0)" class="error-message">
+          Valid price is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Category *</label>
+        <select [(ngModel)]="menuForm.category" class="form-input" 
+                [class.error]="showErrors && !menuForm.category.trim()">
+          <option *ngFor="let category of categories" [value]="category.name">
+            {{category.name}}
+          </option>
+        </select>
+        <div *ngIf="showErrors && !menuForm.category.trim()" class="error-message">
+          Category is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="menuForm.description" rows="3" class="form-input" 
+                  placeholder="Item description (optional)..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Image *</label>
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" class="form-input" 
+               [class.error]="showErrors && !selectedFile && !editingMenuItem">
+        <div *ngIf="selectedFile" class="file-preview">
+          Selected: {{selectedFile.name}}
+        </div>
+        <div *ngIf="editingMenuItem?.imageUrl && !selectedFile" class="image-preview">
+          <img [src]="getImageUrl(editingMenuItem?.imageUrl)" alt="Current image" class="current-image">
+          <p class="image-label">Current Image</p>
+        </div>
+        <div *ngIf="showErrors && !selectedFile && !editingMenuItem" class="error-message">
+          Image is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="addon-label">Available Add-ons</label>
+        <div class="addon-chips">
+          <ng-container *ngFor="let addon of addons">
+            <span *ngIf="addon.available"
+                  class="addon-chip" 
+                  [class.selected]="isCustomizationSelected(addon.id)"
+                  (click)="toggleCustomization(addon.id)">
+              {{addon.name}}{{addon.price > 0 ? ' (+$' + addon.price.toFixed(2) + ')' : ''}}
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveMenuItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div *ngIf="showErrorModal" class="modal-overlay" (click)="closeErrorModal()">
+  <div class="modal-content error-modal" (click)="$event.stopPropagation()">
+    <div class="error-icon">⚠️</div>
+    <h2>Duplicate Name Error</h2>
+    <p>{{errorMessage}}</p>
+    <div class="modal-actions">
+      <button class="btn-primary" (click)="closeErrorModal()">OK</button>
+    </div>
+  </div>
+</div>

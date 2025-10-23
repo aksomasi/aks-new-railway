@@ -1,0 +1,64 @@
+<!-- Desktop Restriction -->
+<!-- <div class="desktop-restriction">
+  <div class="restriction-card">
+    <div class="icon-circle">📱</div>
+    <h1>Mobile Only</h1>
+    <p>This ordering system is designed for mobile devices only.</p>
+    <div style="background: #FFF3E0; border: 2px solid #FF9800; border-radius: 12px; padding: 1.5rem;">
+      <p style="margin: 0; color: #E65100; font-weight: 600;">
+        Please scan the QR code with your mobile phone or visit this page on your smartphone to place an order.
+      </p>
+    </div>
+  </div>
+</div> -->
+
+
+
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">W</div>
+      <div>
+        <div class="brand-name">Wienerschnitzel</div>
+        <div class="subtitle">Drive-Thru Ordering</div>
+      </div>
+    </div>
+  </div>
+<!-- Landing Page -->
+<app-landing 
+  *ngIf="currentView === 'landing'"
+  (continue)="onContinue($event)">
+</app-landing>
+
+<!-- Menu -->
+<app-menu 
+  *ngIf="currentView === 'menu'"
+  [selectedCategory]="selectedCategory"
+  (showCart)="onShowCart()"
+  (showCustomize)="onShowCustomize($event)"
+  (categoryChanged)="onCategoryChanged($event)">
+</app-menu>
+
+<!-- Cart -->
+<app-cart 
+  *ngIf="currentView === 'cart'"
+  [customer]="customer"
+  (showMenu)="onShowMenu()"
+  (orderPlaced)="onOrderPlaced($event)">
+</app-cart>
+
+<!-- Confirmation -->
+<app-confirmation 
+  *ngIf="currentView === 'confirmation'"
+  [orderNumber]="orderNumber"
+  [customer]="customer"
+  (newOrder)="onNewOrder()"
+  (resetOrder)="onResetOrder()">
+</app-confirmation>
+
+<!-- Customize Modal -->
+<app-customize-modal 
+  *ngIf="currentView === 'customize'"
+  [item]="currentCustomizeItem"
+  [options]="currentCustomizeOptions"
+  (closeModal)="onCloseCustomize()">
+</app-customize-modal>

@@ -1,0 +1,41 @@
+<div class="container">
+  <!-- Success Card -->
+  <div class="card success-card">
+    <div class="checkmark-circle">
+      <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2>Thank you, {{customer.fullName || 'Customer'}}!</h2>
+    <p>Order {{orderNumber}}</p>
+  </div>
+
+  <!-- Skip Speaker Button -->
+  <button class="btn btn-primary">
+    Skip the speaker — go straight to the pickup window! 🚗
+  </button>
+
+  <!-- Customer Information -->
+  <div class="card info-card">
+    <h3>Customer Information</h3>
+    
+    <div class="info-item">
+      <div class="info-label">Name</div>
+      <div class="info-value">{{customer.fullName || 'N/A'}}</div>
+    </div>
+    
+    <div class="info-item" *ngIf="customer.plate">
+      <div class="info-label">License Plate</div>
+      <div class="info-value">{{customer.plate}}</div>
+    </div>
+    
+    <div class="info-item" *ngIf="customer.carDetails">
+      <div class="info-label">Vehicle Details</div>
+      <div class="info-value">{{customer.carDetails}}</div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <button (click)="newOrder.emit()" class="btn btn-primary">Place Another Order</button>
+  <button (click)="resetOrder.emit()" class="btn btn-outline">Start New Session</button>
+</div>

@@ -1,0 +1,152 @@
+.dashboard-layout {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.header {
+  background: #C8102E;
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #C8102E;
+  font-size: 1.5rem;
+}
+
+.logo-text h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo-text p {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #FFD100;
+  color: #333;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.3s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.tabs {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tabs-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+.tab {
+  padding: 1rem 0;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-weight: normal;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: capitalize;
+  white-space: nowrap;
+  transition: all 0.3s;
+
+  &.active {
+    border-bottom-color: #C8102E;
+    color: #C8102E;
+    font-weight: bold;
+  }
+
+  &:hover {
+    color: #C8102E;
+  }
+}
+
+.main-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem 2rem 2rem;
+}
+
+.empty-state {
+  background: white;
+  border-radius: 8px;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #999;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}

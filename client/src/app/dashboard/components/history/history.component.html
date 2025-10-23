@@ -1,0 +1,62 @@
+<div class="page-header">
+  <div class="page-title">
+    <h2>Order History</h2>
+    <p class="page-subtitle">{{completedOrders.length}} orders for {{selectedDate | date:'mediumDate'}}</p>
+  </div>
+  <div class="date-picker">
+    <label for="orderDate">Select Date:</label>
+    <input 
+      type="date" 
+      id="orderDate" 
+      [(ngModel)]="selectedDate" 
+      (change)="onDateChange()"
+      [max]="maxDate"
+      class="date-input"
+    >
+  </div>
+</div>
+
+<div *ngIf="completedOrders.length === 0" class="empty-state">
+  <h2>📜 Order History</h2>
+  <p>No completed orders yet</p>
+</div>
+
+<div *ngIf="completedOrders.length > 0" class="history-list">
+  <div *ngFor="let order of completedOrders" class="history-card">
+    <div class="history-header">
+      <div>
+        <div class="order-id">#{{order.id}}</div>
+        <div class="order-date">Status: {{order.status}}</div>
+      </div>
+    </div>
+    
+    <div class="history-content">
+      <div class="customer-section">
+        <h4>Customer</h4>
+        <div class="customer-name">{{order.full_name || 'N/A'}}</div>
+        <div class="customer-detail">🚗 {{order.plate || 'N/A'}}</div>
+        <div class="customer-detail">📝 {{order.car_details || 'N/A'}}</div>
+      </div>
+      
+      <div class="items-section">
+        <h4>Order Items</h4>
+        <div *ngFor="let item of order.items" class="item">
+          <div class="item-row">
+            <span>
+              <span class="item-qty">{{item.qty}}x</span>
+              {{item.name}}
+            </span>
+            <span class="item-price">${{(item.qty * item.price).toFixed(2)}}</span>
+          </div>
+          <div *ngIf="item.customizations.length > 0" class="item-customizations">
+            + {{item.customizations.join(', ')}}
+          </div>
+        </div>
+        <div class="total-row">
+          <span>Total</span>
+          <span class="total-amount">${{order.total.toFixed(2)}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

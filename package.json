@@ -1,0 +1,15 @@
+{
+  "name": "dive-in-restaurant",
+  "version": "1.0.0",
+  "description": "Restaurant ordering system with Angular frontend and Node.js backend",
+  "scripts": {
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm install && npm run build",
+    "build:server": "cd server && npm install && npm run build",
+    "start": "cd server && npm start",
+    "migrate": "cd server && npm run migrate"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

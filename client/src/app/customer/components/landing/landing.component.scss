@@ -1,0 +1,78 @@
+.input-group {
+  position: relative;
+  margin-bottom: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.name-row,
+.vehicle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: nowrap; 
+}
+
+.name-row .input-group,
+.vehicle-row .input-group {
+  flex: 1;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 3px rgba(0,123,255,0.25);
+}
+
+
+.form-input.error,
+.form-select.error {
+  border-color: #dc3545 !important;
+}
+
+
+.error-container {
+  min-height: 20px;
+  margin-bottom: 0.25rem;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+
+@media (max-width: 350px) {
+  .name-row {
+    flex-direction: column; /* ✅ Stack first & last name vertically */
+    gap: 0.5rem;
+  }
+
+  .vehicle-row {
+    flex-wrap: nowrap; /* ✅ Keep vehicle type & color on one line */
+  }
+
+  .name-row .input-group {
+    width: 100%;           /* Each input fills full width */
+  }
+}
+
+
+
