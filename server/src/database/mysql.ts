@@ -237,22 +237,27 @@ function handleUpdate(query: string, params: any[]) {
   
   if (sql.includes('categories')) {
     const item = mockData.categories.find(c => c.id === id);
-    if (item && params.length >= 2) {
-      if (sql.includes('name')) item.name = params[0];
-      if (sql.includes('description')) item.description = params[1];
-      if (sql.includes('available')) item.available = Boolean(params[params.length - 2]);
+    if (item) {
+      // Standard 3-param update: name, description, available, id
+      if (params.length >= 4) {
+        item.name = params[0];
+        item.description = params[1] || '';
+        item.available = Boolean(params[2]);
+      }
     }
   }
   
   if (sql.includes('addons')) {
     const item = mockData.addons.find(a => a.id === id);
     if (item) {
-      // Handle addon updates - check for available field in query
-      if (sql.includes('available')) {
+      // Handle addon updates
+      if (params.length >= 4) {
+        // name, price, available, id
         item.name = params[0];
         item.price = parseFloat(params[1]);
         item.available = Boolean(params[2]);
-      } else {
+      } else if (params.length >= 3) {
+        // name, price, id
         item.name = params[0];
         item.price = parseFloat(params[1]);
       }
@@ -262,18 +267,39 @@ function handleUpdate(query: string, params: any[]) {
   if (sql.includes('menu_items')) {
     const item = mockData.menu_items.find(m => m.id === id);
     if (item) {
-      const fields = query.match(/SET (.+) WHERE/i)?.[1]?.split(',') || [];
-      let paramIndex = 0;
-      fields.forEach(field => {
-        const fieldName = field.trim().split('=')[0].trim();
-        if (fieldName === 'name') item.name = params[paramIndex];
-        if (fieldName === 'description') item.description = params[paramIndex];
-        if (fieldName === 'price') item.price = parseFloat(params[paramIndex]);
-        if (fieldName === 'category_id') item.category_id = parseInt(params[paramIndex]);
-        if (fieldName === 'available') item.available = Boolean(params[paramIndex]);
-        if (fieldName === 'image_url') item.image_url = params[paramIndex];
-        paramIndex++;
-      });
+      // Parse SET clause to handle dynamic updates
+      const setClause = query.match(/SET (.+) WHERE/i)?.[1];
+      if (setClause) {
+        const fields = setClause.split(',').map(f => f.trim());
+        let paramIndex = 0;
+        
+        fields.forEach(field => {
+          const fieldName = field.split('=')[0].trim();
+          const value = params[paramIndex];
+          
+          switch (fieldName) {
+            case 'name':
+              item.name = value;
+              break;
+            case 'description':
+              item.description = value || '';
+              break;
+            case 'price':
+              item.price = parseFloat(value);
+              break;
+            case 'category_id':
+              item.category_id = parseInt(value);
+              break;
+            case 'available':
+              item.available = Boolean(value);
+              break;
+            case 'image_url':
+              item.image_url = value || '';
+              break;
+          }
+          paramIndex++;
+        });
+      }
     }
   }
   

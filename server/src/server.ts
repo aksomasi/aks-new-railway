@@ -22,7 +22,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src-attr": ["'unsafe-inline'"]
+      "script-src-attr": ["'unsafe-inline'"],
+      "connect-src": ["'self'", "http://localhost:3000", "ws://localhost:3000"]
     }
   }
 }));
