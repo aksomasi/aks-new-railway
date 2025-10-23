@@ -7,9 +7,11 @@ export class SocketServer {
   constructor(httpServer: HttpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: "http://localhost:4200",
-        methods: ["GET", "POST"]
-      }
+        origin: ["http://localhost:4200", "http://localhost:3000"],
+        methods: ["GET", "POST"],
+        credentials: true
+      },
+      allowEIO3: true
     });
 
     this.setupEventHandlers();

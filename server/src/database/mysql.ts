@@ -42,16 +42,32 @@ interface Order {
   estimated_time: number;
 }
 
+// Initialize with sample data
 const mockData = {
-  categories: [] as Category[],
-  addons: [] as Addon[],
-  menu_items: [] as MenuItem[],
+  categories: [
+    { id: 1, name: 'Hot Dogs', description: 'Classic hot dogs and sausages', available: true },
+    { id: 2, name: 'Burgers', description: 'Juicy burgers and sandwiches', available: true },
+    { id: 3, name: 'Sides', description: 'Fries, onion rings, and more', available: true },
+    { id: 4, name: 'Beverages', description: 'Drinks and shakes', available: true }
+  ] as Category[],
+  addons: [
+    { id: 1, name: 'Extra Cheese', price: 0.75, available: true },
+    { id: 2, name: 'Bacon', price: 1.25, available: true },
+    { id: 3, name: 'Chili', price: 0.50, available: true },
+    { id: 4, name: 'Onions', price: 0.25, available: true }
+  ] as Addon[],
+  menu_items: [
+    { id: 1, name: 'Original Wiener', description: 'Classic all-beef hot dog', price: 4.99, category_id: 1, image_url: '', available: true },
+    { id: 2, name: 'Chili Dog', description: 'Hot dog with chili', price: 6.49, category_id: 1, image_url: '', available: true },
+    { id: 3, name: 'Classic Burger', description: 'Quarter pound beef patty', price: 8.99, category_id: 2, image_url: '', available: true },
+    { id: 4, name: 'French Fries', description: 'Crispy golden fries', price: 3.49, category_id: 3, image_url: '', available: true }
+  ] as MenuItem[],
   menu_item_addons: [] as MenuItemAddon[],
   orders: [] as Order[],
   order_items: [] as any[]
 };
 
-let nextId = { categories: 1, addons: 1, menu_items: 1, menu_item_addons: 1, orders: 1, order_items: 1 };
+let nextId = { categories: 5, addons: 5, menu_items: 5, menu_item_addons: 1, orders: 1, order_items: 1 };
 
 // Mock MySQL interface
 export const db = {
@@ -87,15 +103,15 @@ function handleSelect(query: string, params: any[]) {
     return [mockData.addons];
   }
   
-  if (sql.includes('from menu_items m join categories c')) {
+  if (sql.includes('from menu_items m join categories c') || sql.includes('from menu_items') && sql.includes('join categories')) {
     const result = mockData.menu_items.map(item => {
       const category = mockData.categories.find(c => c.id === item.category_id);
-      return { ...item, category_name: category?.name };
+      return { ...item, category_name: category?.name || 'Unknown' };
     });
     return [result];
   }
   
-  if (sql.includes('from menu_item_addons mia join addons a')) {
+  if (sql.includes('from menu_item_addons mia join addons a') || (sql.includes('from menu_item_addons') && sql.includes('join addons'))) {
     const menuItemId = params[0];
     const result = mockData.menu_item_addons
       .filter(mia => mia.menu_item_id === menuItemId)
@@ -104,11 +120,33 @@ function handleSelect(query: string, params: any[]) {
     return [result];
   }
   
-  if (sql.includes('from menu_item_addons where menu_item_id')) {
+  if (sql.includes('from menu_item_addons where menu_item_id') || sql.includes('from menu_item_addons') && sql.includes('where')) {
     const menuItemId = params[0];
     const result = mockData.menu_item_addons
       .filter(mia => mia.menu_item_id === menuItemId)
       .map(mia => ({ addon_id: mia.addon_id }));
+    return [result];
+  }
+  
+  if (sql.includes('select id from menu_items where')) {
+    const name = params[0];
+    const result = mockData.menu_items.filter(item => 
+      item.name.toLowerCase() === name.toLowerCase()
+    );
+    return [result];
+  }
+  
+  if (sql.includes('select id from addons where')) {
+    const name = params[0];
+    const result = mockData.addons.filter(addon => 
+      addon.name.toLowerCase() === name.toLowerCase()
+    );
+    return [result];
+  }
+  
+  if (sql.includes('select * from menu_items where id')) {
+    const id = params[0];
+    const result = mockData.menu_items.filter(item => item.id === parseInt(id));
     return [result];
   }
   
@@ -124,35 +162,68 @@ function handleInsert(query: string, params: any[]) {
   
   if (sql.includes('into categories')) {
     const id = nextId.categories++;
-    const newItem = { id, name: params[0], description: params[1], available: params[2] ?? true };
+    const newItem: Category = { 
+      id, 
+      name: params[0], 
+      description: params[1] || '', 
+      available: params[2] !== undefined ? Boolean(params[2]) : true 
+    };
     mockData.categories.push(newItem);
     return [{ insertId: id }];
   }
   
   if (sql.includes('into addons')) {
     const id = nextId.addons++;
-    const newItem = { id, name: params[0], price: params[1], available: params[2] ?? true };
+    const newItem: Addon = { 
+      id, 
+      name: params[0], 
+      price: parseFloat(params[1]) || 0, 
+      available: params[2] !== undefined ? Boolean(params[2]) : true 
+    };
     mockData.addons.push(newItem);
     return [{ insertId: id }];
   }
   
   if (sql.includes('into menu_items')) {
     const id = nextId.menu_items++;
-    const newItem = { id, name: params[0], description: params[1], price: params[2], category_id: params[3], image_url: params[4], available: params[5] ?? true };
+    const newItem: MenuItem = { 
+      id, 
+      name: params[0], 
+      description: params[1] || '', 
+      price: parseFloat(params[2]) || 0, 
+      category_id: parseInt(params[3]), 
+      image_url: params[4] || '', 
+      available: params[5] !== undefined ? Boolean(params[5]) : true 
+    };
     mockData.menu_items.push(newItem);
     return [{ insertId: id }];
   }
   
   if (sql.includes('into menu_item_addons')) {
     const id = nextId.menu_item_addons++;
-    const newItem = { id, menu_item_id: params[0], addon_id: params[1] };
+    const newItem: MenuItemAddon = { 
+      id, 
+      menu_item_id: parseInt(params[0]), 
+      addon_id: parseInt(params[1]) 
+    };
     mockData.menu_item_addons.push(newItem);
     return [{ insertId: id }];
   }
   
   if (sql.includes('into orders')) {
     const id = nextId.orders++;
-    const newItem = { id, order_number: params[0], full_name: params[1], plate: params[2], car_details: params[3], subtotal: params[4], tax: params[5], total: params[6], status: 'new', estimated_time: 15 };
+    const newItem: Order = { 
+      id, 
+      order_number: params[0], 
+      full_name: params[1], 
+      plate: params[2], 
+      car_details: params[3], 
+      subtotal: parseFloat(params[4]) || 0, 
+      tax: parseFloat(params[5]) || 0, 
+      total: parseFloat(params[6]) || 0, 
+      status: 'new', 
+      estimated_time: 15 
+    };
     mockData.orders.push(newItem);
     return [{ insertId: id }];
   }
@@ -162,14 +233,29 @@ function handleInsert(query: string, params: any[]) {
 
 function handleUpdate(query: string, params: any[]) {
   const sql = query.toLowerCase();
-  const id = params[params.length - 1];
+  const id = parseInt(params[params.length - 1]);
   
   if (sql.includes('categories')) {
     const item = mockData.categories.find(c => c.id === id);
     if (item && params.length >= 2) {
       if (sql.includes('name')) item.name = params[0];
       if (sql.includes('description')) item.description = params[1];
-      if (sql.includes('available')) item.available = params[params.length - 2];
+      if (sql.includes('available')) item.available = Boolean(params[params.length - 2]);
+    }
+  }
+  
+  if (sql.includes('addons')) {
+    const item = mockData.addons.find(a => a.id === id);
+    if (item) {
+      // Handle addon updates - check for available field in query
+      if (sql.includes('available')) {
+        item.name = params[0];
+        item.price = parseFloat(params[1]);
+        item.available = Boolean(params[2]);
+      } else {
+        item.name = params[0];
+        item.price = parseFloat(params[1]);
+      }
     }
   }
   
@@ -182,9 +268,9 @@ function handleUpdate(query: string, params: any[]) {
         const fieldName = field.trim().split('=')[0].trim();
         if (fieldName === 'name') item.name = params[paramIndex];
         if (fieldName === 'description') item.description = params[paramIndex];
-        if (fieldName === 'price') item.price = params[paramIndex];
-        if (fieldName === 'category_id') item.category_id = params[paramIndex];
-        if (fieldName === 'available') item.available = params[paramIndex];
+        if (fieldName === 'price') item.price = parseFloat(params[paramIndex]);
+        if (fieldName === 'category_id') item.category_id = parseInt(params[paramIndex]);
+        if (fieldName === 'available') item.available = Boolean(params[paramIndex]);
         if (fieldName === 'image_url') item.image_url = params[paramIndex];
         paramIndex++;
       });
