@@ -1,11 +1,54 @@
 // Mock in-memory database - starts empty
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  available?: boolean;
+}
+
+interface Addon {
+  id: number;
+  name: string;
+  price: number;
+  available?: boolean;
+}
+
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category_id: number;
+  image_url: string;
+  available?: boolean;
+}
+
+interface MenuItemAddon {
+  id: number;
+  menu_item_id: number;
+  addon_id: number;
+}
+
+interface Order {
+  id: number;
+  order_number: string;
+  full_name: string;
+  plate: string;
+  car_details: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  status: string;
+  estimated_time: number;
+}
+
 const mockData = {
-  categories: [],
-  addons: [],
-  menu_items: [],
-  menu_item_addons: [],
-  orders: [],
-  order_items: []
+  categories: [] as Category[],
+  addons: [] as Addon[],
+  menu_items: [] as MenuItem[],
+  menu_item_addons: [] as MenuItemAddon[],
+  orders: [] as Order[],
+  order_items: [] as any[]
 };
 
 let nextId = { categories: 1, addons: 1, menu_items: 1, menu_item_addons: 1, orders: 1, order_items: 1 };
@@ -26,6 +69,10 @@ export const db = {
     }
     
     return [[]];
+  },
+  async end() {
+    // Mock end method for compatibility
+    console.log('Mock database connection closed');
   }
 };
 
